@@ -35,7 +35,8 @@ def count():
 ######################################################################
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pass
+    """return all URL pictures in the list"""
+    return data
 
 ######################################################################
 # GET A PICTURE
@@ -44,7 +45,10 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pass
+    for d in data:
+        if d["id"]==id:
+            return d
+    return {"message": "Picture not found"}, 404
 
 
 ######################################################################
@@ -52,7 +56,15 @@ def get_picture_by_id(id):
 ######################################################################
 @app.route("/picture", methods=["POST"])
 def create_picture():
-    pass
+    """ add a new picture """
+    new_picture = request.json
+    for d in data:
+        if new_picture["id"] == d["id"]:
+            return {
+                "Message": f"picture with id {new_picture['id']} already present"
+            }, 302
+    data.append(new_picture)
+    return new_picture, 201
 
 ######################################################################
 # UPDATE A PICTURE
@@ -61,11 +73,22 @@ def create_picture():
 
 @app.route("/picture/<int:id>", methods=["PUT"])
 def update_picture(id):
-    pass
+    """ Update a picture """
+    up_picture = request.json
+    for d in data:
+        if d["id"] == id:
+            d.update(up_picture)
+            return {"message": f"Picture with id {id} updated successfully."}, 201
+    return {"message": f"Picture with id {id} not found."}, 404
 
 ######################################################################
 # DELETE A PICTURE
 ######################################################################
 @app.route("/picture/<int:id>", methods=["DELETE"])
 def delete_picture(id):
-    pass
+    """ delete a picture """
+    for d in data:
+        if d["id"] == id:
+            data.remove(d)
+            return "", 204
+    return {"message": f"No picture with id {id} found."}, 404
